@@ -18,10 +18,12 @@ import android.graphics.drawable.Drawable;
 public class AppModel {
     private String name;
     Drawable icon;
+    private String packageName;
 
-    public AppModel(String name, Drawable icon) {
+    public AppModel(String name, Drawable icon, String packageName) {
         this.name = name;
         this.icon = icon;
+        this.packageName = packageName;
     }
 
     public String getName() {
@@ -31,4 +33,6 @@ public class AppModel {
     public Drawable getIcon() {
         return icon;
     }
+
+    public String getPackageName() { return packageName; }
 }

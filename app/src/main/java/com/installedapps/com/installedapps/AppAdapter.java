@@ -81,6 +81,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.MyViewHolder>{
                 Context context = view.getContext();
                 Intent intent = new Intent(context, AppDetailActivity.class);
                 intent.putExtra("app-name", item.getName());
+                intent.putExtra("package-name", item.getPackageName());
 
                 context.startActivity(intent);
         }
