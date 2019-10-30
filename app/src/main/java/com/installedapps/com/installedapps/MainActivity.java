@@ -70,12 +70,14 @@ public class MainActivity extends AppCompatActivity {
         List<AppModel>  arrayList = new ArrayList<AppModel>();
         List<PackageInfo> packs = getPackageManager().getInstalledPackages(0);
         String appName = "";
+        String packageName = "";
         for (int i = 0; i < packs.size(); i++) {
             PackageInfo p = packs.get(i);
             if ((isSystemPackage(p) == false)) {
                 appName = p.applicationInfo.loadLabel(getPackageManager()).toString();
                 Drawable icon = p.applicationInfo.loadIcon(getPackageManager());
-                arrayList.add(new AppModel(appName, icon));
+                packageName = p.applicationInfo.packageName;
+                arrayList.add(new AppModel(appName, icon, packageName));
                 Log.e("appName:", appName);
             }
         }
