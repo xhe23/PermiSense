@@ -88,10 +88,12 @@ class AddLocationActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.O
         mMap.uiSettings.isMapToolbarEnabled = false
         // todo: for edits, take stored values instead of current location
         mFusedLocationProviderClient.lastLocation.addOnCompleteListener(this) {
-            val location = it.result!!
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    LatLng(location.latitude, location.longitude), DEFAULT_ZOOM
-            ))
+            val location = it.result
+            if (location != null) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        LatLng(location.latitude, location.longitude), DEFAULT_ZOOM
+                ))
+            }
         }
         mMap.setOnMapClickListener(this)
         mMap.setOnMarkerDragListener(this)
