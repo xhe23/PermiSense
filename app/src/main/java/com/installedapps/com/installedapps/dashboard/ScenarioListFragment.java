@@ -1,16 +1,18 @@
 package com.installedapps.com.installedapps.dashboard;
 
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.installedapps.com.installedapps.AppAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.installedapps.com.installedapps.AppModel;
 import com.installedapps.com.installedapps.ContextAdapter;
 import com.installedapps.com.installedapps.ContextModel;
@@ -19,34 +21,48 @@ import com.installedapps.com.installedapps.R;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class DashboardFragment extends Fragment {
+public class ScenarioListFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private FloatingActionButton mAddScenarioButton;
+    private PopupMenu mAddScenarioMenu;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        View root = inflater.inflate(R.layout.fragment_scenario_list, container, false);
         mRecyclerView = (RecyclerView) root.findViewById(R.id.my_recycler_view);
+        mAddScenarioButton = root.findViewById(R.id.add_scenario_button);
+        mAddScenarioMenu = new PopupMenu(Objects.requireNonNull(getActivity()), mAddScenarioButton, Gravity.TOP);
+        mAddScenarioMenu.inflate(R.menu.scenario_add_menu);
 
         mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mAddScenarioButton.setOnClickListener((v) -> {
+            mAddScenarioMenu.show();
+        });
+
+        mAddScenarioMenu.setOnMenuItemClickListener((menuItem) -> {
+            if (menuItem.getItemId() == R.id.location) {
+                Intent i = new Intent(getActivity(), AddLocationActivity.class);
+                startActivity(i);
+            }
+            return true;
+        });
 
         init();
         return root;

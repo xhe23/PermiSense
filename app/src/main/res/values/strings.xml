@@ -3,4 +3,8 @@
     <string name="title_home">Applications</string>
     <string name="title_dashboard">Contexts</string>
     <string name="title_notifications">Suggestions</string>
+
+
+    <string name="sc_location">Location</string>
+    <string name="title_activity_add_location">Edit Location</string>
 </resources>
