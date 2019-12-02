@@ -22,4 +22,24 @@
         android:name="com.installedapps.com.installedapps.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_edit_rule"
+        android:name="com.installedapps.com.installedapps.rules.EditRuleFragment"
+        android:label="Edit Rule"
+        tools:layout="@layout/fragment_edit_rule" >
+        <action
+            android:id="@+id/action_navigation_edit_rule_to_navigation_rules"
+            app:destination="@id/navigation_rules" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_rules"
+        android:name="com.installedapps.com.installedapps.rules.RulesFragment"
+        android:label="Rules"
+        tools:layout="@layout/fragment_rules" >
+        <action
+            android:id="@+id/action_navigation_rules_to_navigation_edit_rule"
+            app:destination="@id/navigation_edit_rule" />
+    </fragment>
 </navigation>
