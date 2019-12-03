@@ -8,5 +8,7 @@ import androidx.room.PrimaryKey;
 public class Scenario {
     @PrimaryKey
     @NonNull
-    public String scenarioName;
+    public String name;
+
+    public ScenarioDef definition;
 }
