@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".dashboard.AddLocationActivity">
+    tools:context=".scenarios.AddLocationActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".dashboard.AddLocationActivity"
+        tools:context=".scenarios.AddLocationActivity"
         tools:showIn="@layout/activity_add_location">
 
         <EditText
@@ -68,7 +68,7 @@
             app:uiScrollGestures="true"
             app:uiZoomControls="true"
             app:uiZoomGestures="true"
-            tools:context="com.installedapps.com.installedapps.dashboard.AddLocationActivity" />
+            tools:context="com.installedapps.com.installedapps.scenarios.AddLocationActivity" />
 
         <Button
             android:id="@+id/saveButton"

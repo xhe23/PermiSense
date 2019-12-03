@@ -1,4 +1,4 @@
-package com.installedapps.com.installedapps.dashboard
+package com.installedapps.com.installedapps.scenarios
 
 import android.Manifest
 import android.content.pm.PackageManager
