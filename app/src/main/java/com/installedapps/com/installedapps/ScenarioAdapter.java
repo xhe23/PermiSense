@@ -18,7 +18,9 @@ import com.installedapps.com.installedapps.dao.ScenarioDao;
 import com.installedapps.com.installedapps.model.Scenario;
 import com.installedapps.com.installedapps.model.ScenarioDef;
 import com.installedapps.com.installedapps.model.ScenarioLocationDef;
+import com.installedapps.com.installedapps.model.ScenarioTimeDef;
 import com.installedapps.com.installedapps.scenarios.EditLocationActivity;
+import com.installedapps.com.installedapps.scenarios.EditScheduleActivity;
 
 public class ScenarioAdapter extends RecyclerView.Adapter<ScenarioAdapter.ViewHolder> {
     private List<Scenario> scenarios = Collections.emptyList();
@@ -71,8 +73,8 @@ public class ScenarioAdapter extends RecyclerView.Adapter<ScenarioAdapter.ViewHo
             mScenarioNameView.setText(s.name);
             if (s.definition instanceof ScenarioLocationDef) {
                 mScenarioIndicatorView.setImageDrawable(context.getDrawable(R.drawable.ic_location));
-            } else {
-                // todo
+            } else if(s.definition instanceof ScenarioTimeDef) {
+                mScenarioIndicatorView.setImageDrawable(context.getDrawable(R.drawable.ic_schedule_24dp));
             }
         }
         @Override
@@ -81,6 +83,11 @@ public class ScenarioAdapter extends RecyclerView.Adapter<ScenarioAdapter.ViewHo
             if (scenario != null) {
                 if (scenario.definition instanceof ScenarioLocationDef) {
                     Intent intent = new Intent(context, EditLocationActivity.class);
+                    intent.putExtra("name", scenario.name);
+                    intent.putExtra("definition", ScenarioDef.Converter.scenarioDefToString(scenario.definition));
+                    context.startActivity(intent);
+                } else if(scenario.definition instanceof ScenarioTimeDef) {
+                    Intent intent = new Intent(context, EditScheduleActivity.class);
                     intent.putExtra("name", scenario.name);
                     intent.putExtra("definition", ScenarioDef.Converter.scenarioDefToString(scenario.definition));
                     context.startActivity(intent);
