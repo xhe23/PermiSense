@@ -36,7 +36,7 @@ public class PermissionAdapter extends RecyclerView.Adapter<PermissionAdapter.My
     @Override
     public void onBindViewHolder(@NonNull PermissionAdapter.MyViewHolder holder, int position) {
         holder.mPermissionName.setText(arrayList.get(position).getName());
-        //holder.mImageView.setImageDrawable(arrayList.get(position).getIcon());
+        //holder.mScenarioIndicatorView.setImageDrawable(arrayList.get(position).getIcon());
 
         holder.itemView.setTag(arrayList.get(position));
     }
@@ -52,11 +52,11 @@ public class PermissionAdapter extends RecyclerView.Adapter<PermissionAdapter.My
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public TextView mPermissionName;
-        //public ImageView mImageView;
+        //public ImageView mScenarioIndicatorView;
         public MyViewHolder(View v) {
             super(v);
             mPermissionName = v.findViewById(R.id.list_permission_name);
-            //mImageView = v.findViewById(R.id.app_icon);
+            //mScenarioIndicatorView = v.findViewById(R.id.app_icon);
         }
     }
 }
