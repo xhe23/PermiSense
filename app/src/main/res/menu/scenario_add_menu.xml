@@ -4,4 +4,8 @@
     <item
         android:id="@+id/location"
         android:title="@string/sc_location" />
+
+    <item
+        android:id="@+id/time"
+        android:title="Time" />
 </menu>

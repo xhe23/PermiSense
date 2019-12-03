@@ -24,6 +24,9 @@
             android:name=".scenarios.EditLocationActivity"
             android:label="@string/title_activity_add_location"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".scenarios.AddTimeActivity"
+            android:label="Edit schedule"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

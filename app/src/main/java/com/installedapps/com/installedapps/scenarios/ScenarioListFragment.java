@@ -55,6 +55,9 @@ public class ScenarioListFragment extends Fragment {
             if (menuItem.getItemId() == R.id.location) {
                 Intent i = new Intent(getActivity(), EditLocationActivity.class);
                 startActivity(i);
+            } else if(menuItem.getItemId() == R.id.time) {
+                Intent i = new Intent(getActivity(), AddTimeActivity.class);
+                startActivity(i);
             }
             return true;
         });
