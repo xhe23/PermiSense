@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/navigation_sceanrio"
-        android:name="com.installedapps.com.installedapps.dashboard.ScenarioListFragment"
+        android:name="com.installedapps.com.installedapps.scenarios.ScenarioListFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_scenario_list" />
 

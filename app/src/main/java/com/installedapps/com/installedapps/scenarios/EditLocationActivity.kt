@@ -1,10 +1,16 @@
-package com.installedapps.com.installedapps.dashboard
+package com.installedapps.com.installedapps.scenarios
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.AsyncTask
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -16,13 +22,17 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.installedapps.com.installedapps.R
 
-import kotlinx.android.synthetic.main.activity_add_location.*
+import kotlinx.android.synthetic.main.activity_edit_location.*
 
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.installedapps.com.installedapps.AppDatabase
+import com.installedapps.com.installedapps.model.Scenario
+import com.installedapps.com.installedapps.model.ScenarioDef
+import com.installedapps.com.installedapps.model.ScenarioLocationDef
 
 
-class AddLocationActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerDragListener, SeekBar.OnSeekBarChangeListener {
+class EditLocationActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerDragListener, SeekBar.OnSeekBarChangeListener {
 
     companion object {
         private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0
@@ -36,21 +46,73 @@ class AddLocationActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.O
     private var mMarker: Marker? = null
     private var mCircle: Circle? = null
     private lateinit var mSeekBar: SeekBar
+    private lateinit var mName: EditText
+    private lateinit var mSaveButton: Button
+    private var update = false
+    private var storedDef: ScenarioLocationDef? = null
 
+    @SuppressLint("StaticFieldLeak")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_location)
+        setContentView(R.layout.activity_edit_location)
         setSupportActionBar(toolbar)
 
         mSeekBar = findViewById(R.id.seekBar)
+        mSaveButton = findViewById(R.id.saveButton)
+        mName = findViewById(R.id.nameEdit)
+
         mSeekBar.max = MAX_RADIUS - MIN_RADIUS
         mSeekBar.setOnSeekBarChangeListener(this)
 
-        val mSaveButton: Button = findViewById(R.id.saveButton)
-        mSaveButton.setOnClickListener {
-            // todo: save
-            finish()
+        mName.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                checkSave()
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
+
+        val name = intent.getStringExtra("name")
+        if (name != null) {
+            update = true
+            mName.setText(name)
+            mName.isEnabled = false
+            storedDef = ScenarioDef.Converter.stringToScenarioDef(intent.getStringExtra("definition")) as ScenarioLocationDef
+            mSeekBar.progress = storedDef!!.radius.toInt() - MIN_RADIUS
         }
+
+        mSaveButton.setOnClickListener {
+            if (!checkSave()) {
+                return@setOnClickListener
+            }
+            mSaveButton.isEnabled = false
+            val s = Scenario()
+            s.name = mName.text.toString()
+            val def = ScenarioLocationDef()
+            def.lat = mMarker!!.position.latitude
+            def.lon = mMarker!!.position.longitude
+            def.radius = mSeekBar.progress.toDouble()
+            s.definition = def
+            object : AsyncTask<Void, Void, Void?>() {
+                override fun doInBackground(vararg params: Void?): Void? {
+                    val dao = AppDatabase.getInstance(this@EditLocationActivity).scenarioDao()
+                    if (update) {
+                        Log.i("PermiSense", "update")
+                        dao.update(s)
+                    } else {
+                        Log.i("PermiSense", "insert")
+                        dao.insert(s)
+                    }
+                    return null
+                }
+                override fun onPostExecute(result: Void?) {
+                    finish()
+                }
+            }.execute()
+        }
+        mSaveButton.isEnabled = false
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -86,20 +148,25 @@ class AddLocationActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.O
         mMap.isMyLocationEnabled = true
         mMap.uiSettings.isMyLocationButtonEnabled = true
         mMap.uiSettings.isMapToolbarEnabled = false
-        // todo: for edits, take stored values instead of current location
-        mFusedLocationProviderClient.lastLocation.addOnCompleteListener(this) {
-            val location = it.result
-            if (location != null) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        LatLng(location.latitude, location.longitude), DEFAULT_ZOOM
-                ))
+        if (update) {
+            val loc = LatLng(storedDef!!.lat, storedDef!!.lon)
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, DEFAULT_ZOOM))
+            setMarker(loc)
+        } else {
+            mFusedLocationProviderClient.lastLocation.addOnCompleteListener(this) {
+                val location = it.result
+                if (location != null) {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                            LatLng(location.latitude, location.longitude), DEFAULT_ZOOM
+                    ))
+                }
             }
         }
         mMap.setOnMapClickListener(this)
         mMap.setOnMarkerDragListener(this)
     }
 
-    override fun onMapClick(loc: LatLng) {
+    private fun setMarker(loc: LatLng) {
         if (mMarker != null) {
             mMarker!!.position = loc
             mCircle!!.center = loc
@@ -109,7 +176,18 @@ class AddLocationActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.O
                     .strokeWidth(10.0f)
                     .strokeColor(Color.GREEN)
                     .fillColor(Color.argb(128, 128, 255, 128)))
+            checkSave()
         }
+    }
+
+    private fun checkSave(): Boolean {
+        val res = !(mMarker == null || mName.text.isEmpty())
+        mSaveButton.isEnabled = res
+        return res
+    }
+
+    override fun onMapClick(loc: LatLng) {
+        setMarker(loc)
     }
 
     override fun onMarkerDragStart(m: Marker) {

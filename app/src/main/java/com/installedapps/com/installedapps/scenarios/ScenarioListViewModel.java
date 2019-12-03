@@ -1,4 +1,4 @@
-package com.installedapps.com.installedapps.dashboard;
+package com.installedapps.com.installedapps.scenarios;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

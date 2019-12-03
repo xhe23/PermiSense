@@ -21,7 +21,7 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
         <activity
-            android:name=".dashboard.AddLocationActivity"
+            android:name=".scenarios.EditLocationActivity"
             android:label="@string/title_activity_add_location"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".MainActivity">
