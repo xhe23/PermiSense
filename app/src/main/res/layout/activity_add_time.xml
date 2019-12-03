@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/timeNameEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/general_margin"
+        android:layout_marginTop="@dimen/general_margin"
+        android:layout_marginEnd="@dimen/general_margin"
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="63dp"
+        android:text="Start:"
+        android:textSize="24sp"
+        android:layout_marginStart="@dimen/general_margin"
+        android:layout_marginTop="@dimen/general_margin"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/general_margin">
+        <Button
+            android:id="@+id/start_time_button"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:text="12:00 PM"
+            android:onClick="showStartTimePickerDialog" />
+
+        <Button
+            android:id="@+id/start_date_button"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:text="Start Date"
+            android:onClick="showStartDatePickerDialog" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="63dp"
+        android:text="End:"
+        android:textSize="24sp"
+        android:layout_marginStart="@dimen/general_margin"
+        android:layout_marginTop="40dp"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/general_margin">
+        <Button
+            android:id="@+id/end_time_button"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:text="1:00 PM"
+            android:onClick="showEndTimePickerDialog" />
+
+        <Button
+            android:id="@+id/end_date_button"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:text="Every Day"
+            android:onClick="showEndDatePickerDialog" />
+    </LinearLayout>
+
+    <Button
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_marginTop="100dp"
+        android:layout_marginStart="@dimen/general_margin"
+        android:onClick="showDatePickerDialog" />
+
+</LinearLayout>

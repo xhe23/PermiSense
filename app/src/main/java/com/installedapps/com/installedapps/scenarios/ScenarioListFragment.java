@@ -1,14 +1,12 @@
-package com.installedapps.com.installedapps.dashboard;
+package com.installedapps.com.installedapps.scenarios;
 
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -59,6 +57,9 @@ public class ScenarioListFragment extends Fragment {
         mAddScenarioMenu.setOnMenuItemClickListener((menuItem) -> {
             if (menuItem.getItemId() == R.id.location) {
                 Intent i = new Intent(getActivity(), AddLocationActivity.class);
+                startActivity(i);
+            } else if(menuItem.getItemId() == R.id.time) {
+                Intent i = new Intent(getActivity(), AddTimeActivity.class);
                 startActivity(i);
             }
             return true;
