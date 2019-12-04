@@ -1,4 +1,4 @@
-package com.installedapps.com.installedapps.notifications;
+package com.installedapps.com.installedapps.appgroup;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

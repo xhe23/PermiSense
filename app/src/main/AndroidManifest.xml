@@ -37,6 +37,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AppDetailActivity" />
+        <activity android:name=".appgroup.AppList_AppGroupFragment"/>
         <service android:name=".manager.PermissionManagerService" />
         <receiver android:name=".manager.LocationReceiver" />
     </application>
