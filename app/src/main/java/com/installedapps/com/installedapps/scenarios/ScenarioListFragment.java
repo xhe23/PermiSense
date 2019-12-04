@@ -36,7 +36,7 @@ public class ScenarioListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_scenario_list, container, false);
-        mRecyclerView = (RecyclerView) root.findViewById(R.id.my_recycler_view);
+        mRecyclerView = root.findViewById(R.id.my_recycler_view);
         mAddScenarioButton = root.findViewById(R.id.add_scenario_button);
         mAddScenarioMenu = new PopupMenu(Objects.requireNonNull(getActivity()), mAddScenarioButton, Gravity.TOP);
         mAddScenarioMenu.inflate(R.menu.scenario_add_menu);

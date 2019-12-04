@@ -45,12 +45,12 @@ public class EditRuleFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_edit_rule, container, false);
-        mScenario=(Spinner)root.findViewById(R.id.scenario);
-        mAppGroup=(Spinner)root.findViewById(R.id.appgroup);
-        mPermissionsLayout =(LinearLayout) root.findViewById(R.id.permissions_layout);
+        mScenario= root.findViewById(R.id.scenario);
+        mAppGroup= root.findViewById(R.id.appgroup);
+        mPermissionsLayout = root.findViewById(R.id.permissions_layout);
         init();
-        mSave=(Button)root.findViewById(R.id.save);
-        mCancel=(Button)root.findViewById(R.id.cancel);
+        mSave= root.findViewById(R.id.save);
+        mCancel= root.findViewById(R.id.cancel);
         mSave.setOnClickListener(new saveOnClickListener());
         mCancel.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_navigation_edit_rule_to_navigation_rules));
         return root;

@@ -137,7 +137,7 @@ class EditLocationActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
     }
 
     private fun createMap() {
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment!!.getMapAsync(this)

@@ -49,10 +49,10 @@ public class RulesFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_rules, container, false);
         rules=new ArrayList<>();
-        mAddRule=(FloatingActionButton)root.findViewById(R.id.add_rule_button);
+        mAddRule= root.findViewById(R.id.add_rule_button);
         mAddRule.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_navigation_rules_to_navigation_edit_rule));
 
-        mRecyclerView = (RecyclerView) root.findViewById(R.id.my_recycler_view);
+        mRecyclerView = root.findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(getContext());

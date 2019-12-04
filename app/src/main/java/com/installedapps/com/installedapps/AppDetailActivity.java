@@ -32,12 +32,12 @@ public class AppDetailActivity extends AppCompatActivity {
         Intent i = getIntent();
         mAppName = i.getStringExtra("app-name");
         mPackageName = i.getStringExtra("package-name");
-        TextView nameTextView = (TextView)findViewById(R.id.appNameTextView);
+        TextView nameTextView = findViewById(R.id.appNameTextView);
         nameTextView.setText(mAppName);
         //TextView permissionTextView = (TextView)findViewById(R.id.permissionsTextView);
 
         mPermissions = new ArrayList<PermissionModel>();
-        mRecyclerView = (RecyclerView) findViewById(R.id.permission_recycler_view);
+        mRecyclerView = findViewById(R.id.permission_recycler_view);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);

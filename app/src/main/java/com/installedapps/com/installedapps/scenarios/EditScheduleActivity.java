@@ -43,14 +43,14 @@ public class EditScheduleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_schedule);
 
-        mStartTimeButton = (Button)findViewById(R.id.start_time_button);
-        mStartDateButton = (Button)findViewById(R.id.start_date_button);
-        mEndTimeButton = (Button)findViewById(R.id.end_time_button);
-        mEndDateButton = (Button)findViewById(R.id.end_date_button);
-        mSaveButton = (Button)findViewById(R.id.save_schedule_button);
-        mRepeatButton = (ToggleButton) findViewById(R.id.repeat_button);
-        mDeleteButton = (Button)findViewById(R.id.delete_schedule_button);
-        mName = (EditText)findViewById(R.id.timeNameEdit);
+        mStartTimeButton = findViewById(R.id.start_time_button);
+        mStartDateButton = findViewById(R.id.start_date_button);
+        mEndTimeButton = findViewById(R.id.end_time_button);
+        mEndDateButton = findViewById(R.id.end_date_button);
+        mSaveButton = findViewById(R.id.save_schedule_button);
+        mRepeatButton = findViewById(R.id.repeat_button);
+        mDeleteButton = findViewById(R.id.delete_schedule_button);
+        mName = findViewById(R.id.timeNameEdit);
 
         long startMil, endMil;
         Intent i = getIntent();
