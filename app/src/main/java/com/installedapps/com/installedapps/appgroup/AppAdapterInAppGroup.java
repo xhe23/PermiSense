@@ -26,8 +26,6 @@ public class AppAdapterInAppGroup extends RecyclerView.Adapter<AppAdapterInAppGr
     // Provide a suitable constructor (depends on the kind of dataset)
     public AppAdapterInAppGroup( List<AppModel> myDataset) {
         arrayList = myDataset;
-        System.out.println("appsnumber"+myDataset.size());
-        System.out.println("apps"+myDataset.get(0).getName());
     }
 
     @NonNull
