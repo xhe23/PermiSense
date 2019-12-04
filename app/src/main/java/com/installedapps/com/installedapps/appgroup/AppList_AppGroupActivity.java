@@ -32,7 +32,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AppList_AppGroupFragment extends AppCompatActivity {
+public class AppList_AppGroupActivity extends AppCompatActivity {
     private TextView mTextView;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -44,11 +44,12 @@ public class AppList_AppGroupFragment extends AppCompatActivity {
         setContentView(R.layout.fragment_applist_appgroup);
         Intent i = getIntent();
         String mAppGroupName = i.getStringExtra("appGroup");
-        System.out.println("appgroup name" + mAppGroupName);
         mRecyclerView = findViewById(R.id.applist_appgroup_recycler);
         mTextView = findViewById(R.id.appgroup_name_on_app_list);
-
         mTextView.setText(mAppGroupName);
+
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
         mRecyclerView.setHasFixedSize(true);
 
