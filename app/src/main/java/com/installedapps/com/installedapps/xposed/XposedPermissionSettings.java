@@ -1,7 +1,11 @@
 package com.installedapps.com.installedapps.xposed;
 
 public class XposedPermissionSettings {
-    public static final String SOCK_NAME = "PermiSenseXposed";
+    private static final String SOCK_NAME = "PermiSenseXposed";
+
+    public static final int UNAVAILABLE = -1;
+    public static final int REVOKED = 0;
+    public static final int GRANTED = 1;
 
     public static native void grantPermission(String packageName, String permissions);
     public static native void revokePermission(String packageName, String permissions);

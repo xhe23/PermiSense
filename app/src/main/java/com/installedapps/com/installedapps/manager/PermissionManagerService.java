@@ -32,6 +32,7 @@ public class PermissionManagerService extends Service {
     @Override
     public void onCreate() {
         PermissionManager.getInstance().setContext(this);
+        XposedPermissionSettings.runServer();
     }
 
     @Override
@@ -46,8 +47,6 @@ public class PermissionManagerService extends Service {
             startForeground(NOTIF_ID, new Notification.Builder(this).build());
         }
 
-        XposedPermissionSettings.runServer();
-
         reloadScenarios();
         return START_STICKY;
     }
@@ -60,6 +59,7 @@ public class PermissionManagerService extends Service {
     @Override
     public void onDestroy() {
         PermissionManager.getInstance().setContext(null);
+        XposedPermissionSettings.killServer();
     }
 
     private void reloadScenarios() {

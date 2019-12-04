@@ -5,7 +5,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import com.installedapps.com.installedapps.PermissionManager;
+import com.installedapps.com.installedapps.model.PermisensePermissions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,12 +15,13 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-import static com.installedapps.com.installedapps.xposed.MethodHook.SENSOR;
-
 
 public class SensorHook {
     private String packageName;
     private ClassLoader classLoader;
+    private static final long CHECK_INTERVAL = 200; // ms
+    private int lastCheckRes = XposedPermissionSettings.REVOKED;
+    private long lastCheckTime = System.currentTimeMillis() - CHECK_INTERVAL;
     public SensorHook(XC_LoadPackage.LoadPackageParam lpparam) {
         packageName = lpparam.packageName;
         classLoader = lpparam.classLoader;
@@ -89,7 +90,15 @@ public class SensorHook {
         }
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            if (PermissionManager.checkPermission(packageName, SENSOR)) {
+            long now = System.currentTimeMillis();
+            if (now - lastCheckTime > CHECK_INTERVAL) {
+                int permRes = XposedPermissionSettings.queryPermission(packageName, PermisensePermissions.SENSOR);
+                if (permRes != XposedPermissionSettings.UNAVAILABLE) {
+                    lastCheckRes = permRes;
+                    lastCheckTime = now;
+                }
+            }
+            if (lastCheckRes == XposedPermissionSettings.GRANTED) {
                 try {
                     listener.onSensorChanged(sensorEvent);
                 } catch (NullPointerException e) {

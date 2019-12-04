@@ -16,29 +16,65 @@
 #include <vector>
 #include <unistd.h>
 #include <string>
+#include <unordered_map>
+#include <shared_mutex>
 
 using std::atomic_bool;
 using std::unique_ptr;
 using std::vector;
 using std::string;
+using std::unordered_map;
+using std::shared_timed_mutex;
+using std::unique_lock;
+using std::shared_lock;
 
 char* SOCK_NAME = nullptr;
 std::thread serverThread;
 atomic_bool killing(false);
+shared_timed_mutex permMutex;
+unordered_map<string, vector<bool>> revokedPermissions;
 
 constexpr int TYPE_QUERY_PERMISSION = 0;
 constexpr int TYPE_INV = 255;
 
+void grantPermission(const string& packageName, const string& permissions) {
+    unique_lock<shared_timed_mutex> lock(permMutex);
+    auto it = revokedPermissions.find(packageName);
+    if (it == revokedPermissions.end()) return;
+    for (char perm: permissions) {
+        it->second[static_cast<uint8_t>(perm)] = false;
+    }
+}
+void revokePermission(const string& packageName, const string& permissions) {
+    unique_lock<shared_timed_mutex> lock(permMutex);
+    auto it = revokedPermissions.find(packageName);
+    if (it == revokedPermissions.end()) {
+        revokedPermissions.insert({packageName, vector<bool>(false, 256)});
+        it = revokedPermissions.find(packageName);
+    }
+    for (char perm: permissions) {
+        it->second[static_cast<uint8_t>(perm)] = true;
+    }
+}
+bool queryPermission(const string& packageName, char permission) {
+    shared_lock<shared_timed_mutex> lock(permMutex);
+    auto it = revokedPermissions.find(packageName);
+    if (it == revokedPermissions.end()) return true;
+    return !it->second[static_cast<uint8_t>(permission)];
+}
+
 void handleRequest(vector<uint8_t> &buf) {
-    if (buf.size() == 0) return;
+    if (buf.empty()) return;
     int type = buf[0];
     if (type == TYPE_QUERY_PERMISSION) {
         char permission = buf[1];
         size_t pnlen = *reinterpret_cast<uint32_t*>(&buf[2]);
         string packageName(reinterpret_cast<char*>(buf.data() + 6), pnlen);
-        // todo
+        bool result = queryPermission(packageName, permission);
         buf.resize(1);
-        buf[0] = 1;
+        buf[0] = static_cast<uint8_t>(result);
+    } else {
+        buf.clear();
     }
 }
 
@@ -141,11 +177,11 @@ bool makeRequest(vector<uint8_t>& buf) {
     return true;
 }
 
-int queryPermission(const string& packageName, char permission) {
+int queryPermissionRequest(const string &packageName, char permission) {
     vector<uint8_t> buf;
     buf.reserve(1024);
     buf.resize(6);
-    buf[0] = 0;
+    buf[0] = TYPE_QUERY_PERMISSION;
     buf[1] = (uint8_t) permission;
     *reinterpret_cast<uint32_t*>(&buf[2]) = packageName.size();
     for (char c: packageName) {
@@ -157,15 +193,52 @@ int queryPermission(const string& packageName, char permission) {
     return buf[0];
 }
 
+void stopServer() {
+    if (!serverThread.joinable()) return;
+    killing.store(true);
+    vector<uint8_t> buf;
+    buf.push_back(TYPE_INV);
+    makeRequest(buf);
+    serverThread.join();
+}
+
 extern "C" {
 JNIEXPORT void JNICALL
 Java_com_installedapps_com_installedapps_xposed_XposedPermissionSettings_grantPermission
-        (JNIEnv *env, jclass clazz, jstring packageName, jstring permissions) {}
+        (JNIEnv *env, jclass clazz, jstring jpackageName, jstring jpermissions) {
+    jsize len;
+    const char* chars;
+
+    len = env->GetStringUTFLength(jpackageName);
+    chars = env->GetStringUTFChars(jpackageName, nullptr);
+    string packageName(chars, len);
+    env->ReleaseStringUTFChars(jpackageName, chars);
+
+    len = env->GetStringUTFLength(jpermissions);
+    chars = env->GetStringUTFChars(jpermissions, nullptr);
+    string permissions(chars, len);
+
+    grantPermission(packageName, permissions);
+}
 
 
 JNIEXPORT void JNICALL
 Java_com_installedapps_com_installedapps_xposed_XposedPermissionSettings_revokePermission
-        (JNIEnv *env, jclass clazz, jstring packageName, jstring permissions) {}
+        (JNIEnv *env, jclass clazz, jstring jpackageName, jstring jpermissions) {
+    jsize len;
+    const char* chars;
+
+    len = env->GetStringUTFLength(jpackageName);
+    chars = env->GetStringUTFChars(jpackageName, nullptr);
+    string packageName(chars, len);
+    env->ReleaseStringUTFChars(jpackageName, chars);
+
+    len = env->GetStringUTFLength(jpermissions);
+    chars = env->GetStringUTFChars(jpermissions, nullptr);
+    string permissions(chars, len);
+
+    revokePermission(packageName, permissions);
+}
 
 
 JNIEXPORT jint JNICALL
@@ -175,7 +248,7 @@ Java_com_installedapps_com_installedapps_xposed_XposedPermissionSettings_queryPe
     const char* chars = env->GetStringUTFChars(jpackageName, nullptr);
     string packageName(chars, len);
     env->ReleaseStringUTFChars(jpackageName, chars);
-    return static_cast<jint>(queryPermission(packageName, (char) permission));
+    return static_cast<jint>(queryPermissionRequest(packageName, (char) permission));
 }
 
 JNIEXPORT void JNICALL Java_com_installedapps_com_installedapps_xposed_XposedPermissionSettings_runServer
@@ -186,11 +259,7 @@ JNIEXPORT void JNICALL Java_com_installedapps_com_installedapps_xposed_XposedPer
 
 JNIEXPORT void JNICALL Java_com_installedapps_com_installedapps_xposed_XposedPermissionSettings_killServer
         (JNIEnv *, jclass) {
-    killing.store(true);
-    vector<uint8_t> buf;
-    buf.push_back(TYPE_INV);
-    makeRequest(buf);
-    serverThread.join();
+    stopServer();
 }
 
 JNIEXPORT void JNICALL Java_com_installedapps_com_installedapps_xposed_XposedPermissionSettings_init

@@ -22,15 +22,4 @@ public class XposedMain implements IXposedHookLoadPackage {
         sensorHook = new SensorHook(lpparam);
         sensorHook.hookSensors();
     }
-
-    public static void hookMethod(String className, String methodName, Object[] paramTypes, XC_LoadPackage.LoadPackageParam lpparam, int minSdk, int maxSdk, MethodHook hook) {
-        if (Build.VERSION.SDK_INT < minSdk || Build.VERSION.SDK_INT > maxSdk) {
-            return;
-        }
-        hook.setPackageName(lpparam.packageName);
-        Object[] paramAndHook = new Object[paramTypes.length + 1];
-        System.arraycopy(paramTypes, 0, paramAndHook, 0, paramTypes.length);
-        paramAndHook[paramAndHook.length - 1] = hook;
-        findAndHookMethod(className, lpparam.classLoader, methodName, paramAndHook);
-    }
 }
