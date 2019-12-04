@@ -32,9 +32,9 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     public void onDateSet(DatePicker view, int year, int month, int day) {
         // Do something with the date chosen by the user
         if(isStart) {
-            ((AddTimeActivity) getActivity()).setStartDate(month, day, year);
+            ((EditScheduleActivity) getActivity()).setStartDate(month, day, year);
         } else {
-            ((AddTimeActivity) getActivity()).setEndDate(month, day, year);
+            ((EditScheduleActivity) getActivity()).setEndDate(month, day, year);
         }
     }
 }

@@ -16,7 +16,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="63dp"
+        android:layout_height="40dp"
         android:text="Start:"
         android:textSize="24sp"
         android:layout_marginStart="@dimen/general_margin"
@@ -43,7 +43,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="63dp"
+        android:layout_height="40dp"
         android:text="End:"
         android:textSize="24sp"
         android:layout_marginStart="@dimen/general_margin"
@@ -64,16 +64,47 @@
             android:id="@+id/end_date_button"
             android:layout_width="140dp"
             android:layout_height="wrap_content"
-            android:text="Every Day"
+            android:text=""
             android:onClick="showEndDatePickerDialog" />
     </LinearLayout>
 
-    <Button
-        android:layout_width="140dp"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal" android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save"
-        android:layout_marginTop="100dp"
         android:layout_marginStart="@dimen/general_margin"
-        android:onClick="showDatePickerDialog" />
+        android:layout_marginTop="@dimen/general_margin">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Repeat Every Day:"
+            android:textSize="24sp" />
+
+        <ToggleButton
+            android:id="@+id/repeat_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="" />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/general_margin"
+        android:layout_marginTop="@dimen/general_margin">
+
+        <Button
+            android:id="@+id/save_schedule_button"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:onClick="saveValue" />
+
+        <Button
+            android:id="@+id/delete_schedule_button"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:text="Remove"
+            android:onClick="deleteValue" />
+    </LinearLayout>
 
 </LinearLayout>
