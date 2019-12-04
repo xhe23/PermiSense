@@ -19,11 +19,15 @@ import com.installedapps.com.installedapps.model.ScenarioDef;
 public abstract class AppDatabase extends RoomDatabase {
     public abstract RuleDao ruleDao();
     public abstract ScenarioDao scenarioDao();
-    private static AppDatabase instance=null;
+    private static AppDatabase instance = null;
 
     public static AppDatabase getInstance(Context appContext){
-        if (instance==null){
-            instance= Room.databaseBuilder(appContext,AppDatabase.class,"permisense").build();
+        if (instance == null){
+            synchronized (AppDatabase.class) {
+                if (instance == null) {
+                    instance = Room.databaseBuilder(appContext,AppDatabase.class,"permisense").build();
+                }
+            }
         }
         return instance;
     }

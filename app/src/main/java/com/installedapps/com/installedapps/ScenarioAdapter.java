@@ -24,7 +24,7 @@ public class ScenarioAdapter extends RecyclerView.Adapter<ScenarioAdapter.ViewHo
     private List<Scenario> scenarios = Collections.emptyList();
 
     public ScenarioAdapter() {
-//        dao = AppDatabase.getInstance(activity).scenarioDao();
+//        dao = AppDatabase.getINSTANCE(activity).scenarioDao();
 //        scenarios = dao.getAll();
     }
 
