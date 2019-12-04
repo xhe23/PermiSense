@@ -43,10 +43,17 @@ public class AppList_AppGroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_applist_appgroup);
         Intent i = getIntent();
+        boolean isNewAppGroup = i.getBooleanExtra("isNewAppGroup", false);
         String mAppGroupName = i.getStringExtra("appGroup");
         mRecyclerView = findViewById(R.id.applist_appgroup_recycler);
         mTextView = findViewById(R.id.appgroup_name_on_app_list);
-        mTextView.setText(mAppGroupName);
+        if(isNewAppGroup){
+            System.out.println("newAppGroup");
+        }
+        else{
+            mTextView.setText(mAppGroupName);
+        }
+
 
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -82,6 +89,7 @@ public class AppList_AppGroupActivity extends AppCompatActivity {
                 appName = p.applicationInfo.loadLabel(this.getPackageManager()).toString();
                 Drawable icon = p.applicationInfo.loadIcon(this.getPackageManager());
                 packageName = p.applicationInfo.packageName;
+                Log.e("packageName", packageName);
                 arrayList.add(new AppModel(appName, icon, packageName));
                 //Log.e("appName:", appName);
             //}

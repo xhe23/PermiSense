@@ -13,11 +13,10 @@ public class AppGroup {
     @NonNull
     public String groupName;
 
-    //public HashSet<String> apps;
+    public String apps;
 
     public AppGroup(String groupName) {
         this.groupName = groupName;
-        //apps = new HashSet<>();
     }
 
     public String getGroupName() {
