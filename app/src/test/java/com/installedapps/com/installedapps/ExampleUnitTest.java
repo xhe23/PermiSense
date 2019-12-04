@@ -1,5 +1,7 @@
 package com.installedapps.com.installedapps;
 
+import com.installedapps.com.installedapps.xposed.XposedPermissionSettings;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
