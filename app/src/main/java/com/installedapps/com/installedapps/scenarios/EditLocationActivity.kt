@@ -93,7 +93,7 @@ class EditLocationActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.
             val def = ScenarioLocationDef()
             def.lat = mMarker!!.position.latitude
             def.lon = mMarker!!.position.longitude
-            def.radius = mSeekBar.progress.toDouble()
+            def.radius = mSeekBar.progress.toDouble() + MIN_RADIUS
             s.definition = def
             object : AsyncTask<Void, Void, Void?>() {
                 override fun doInBackground(vararg params: Void?): Void? {

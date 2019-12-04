@@ -3,6 +3,8 @@
     package="com.installedapps.com.installedapps">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:allowBackup="true"
@@ -36,6 +38,8 @@
         </activity>
         <activity android:name=".AppDetailActivity" />
         <activity android:name=".appgroup.AppList_AppGroupFragment"/>
+        <service android:name=".manager.PermissionManagerService" />
+        <receiver android:name=".manager.LocationReceiver" />
     </application>
 
 </manifest>

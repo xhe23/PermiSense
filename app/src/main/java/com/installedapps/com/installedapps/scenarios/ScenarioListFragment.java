@@ -1,9 +1,15 @@
 package com.installedapps.com.installedapps.scenarios;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +19,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.installedapps.com.installedapps.AppDatabase;
 import com.installedapps.com.installedapps.ScenarioAdapter;
 import com.installedapps.com.installedapps.R;
+import com.installedapps.com.installedapps.manager.IPermissionManagerService;
+import com.installedapps.com.installedapps.manager.PermissionManagerService;
 import com.installedapps.com.installedapps.model.Scenario;
 
 import java.util.List;
@@ -31,6 +39,8 @@ public class ScenarioListFragment extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
     private FloatingActionButton mAddScenarioButton;
     private PopupMenu mAddScenarioMenu;
+    private IPermissionManagerService managerService = null;
+    ServiceConnection conn = null;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -68,9 +78,49 @@ public class ScenarioListFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        Context context = getContext();
+        if (conn != null && context != null) {
+            context.unbindService(conn);
+        }
+        conn = null;
+        super.onDestroyView();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         refreshData();
+        refreshManager();
+    }
+
+    private void refreshManager() {
+        if (managerService != null) {
+            try {
+                managerService.reloadScenarios();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Context context = getContext();
+            if (context != null) {
+                conn = new ServiceConnection() {
+                    @Override
+                    public void onServiceConnected(ComponentName name, IBinder service) {
+                        managerService = (IPermissionManagerService) service;
+                        refreshManager();
+                    }
+
+                    @Override
+                    public void onServiceDisconnected(ComponentName name) {
+                        managerService = null;
+                    }
+                };
+                Intent intent = new Intent(context, PermissionManagerService.class);
+                // todo: check return value
+                context.bindService(intent, conn, 0);
+            }
+        }
     }
 
     @SuppressLint("StaticFieldLeak")
