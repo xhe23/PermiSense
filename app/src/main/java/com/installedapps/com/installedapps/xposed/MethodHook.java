@@ -1,4 +1,4 @@
-package com.installedapps.xposed;
+package com.installedapps.com.installedapps.xposed;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;

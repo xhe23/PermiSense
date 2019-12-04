@@ -1,10 +1,9 @@
-package com.installedapps.xposed;
+package com.installedapps.com.installedapps.xposed;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
 
 import com.installedapps.com.installedapps.PermissionManager;
 
@@ -16,7 +15,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-import static com.installedapps.xposed.MethodHook.SENSOR;
+import static com.installedapps.com.installedapps.xposed.MethodHook.SENSOR;
 
 
 public class SensorHook {

@@ -1,4 +1,4 @@
-package com.installedapps.xposed;
+package com.installedapps.com.installedapps.xposed;
 
 import android.os.Build;
 
