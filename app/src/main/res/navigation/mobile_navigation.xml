@@ -18,10 +18,14 @@
         tools:layout="@layout/fragment_scenario_list" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.installedapps.com.installedapps.appgroup.NotificationsFragment"
+        android:id="@+id/navigation_appgroups"
+        android:name="com.installedapps.com.installedapps.appgroup.AppgroupFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_appgroups" >
+        <action
+            android:id="@+id/action_navigation_appgroups_to_navigation_edit_appgroups"
+            app:destination="@id/navigation_edit_rule" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_edit_rule"
