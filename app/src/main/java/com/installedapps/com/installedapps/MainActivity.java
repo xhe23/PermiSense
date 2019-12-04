@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
+        PermissionOperator.updateOriginalPermissions(getPackageManager());
+
         Intent intent = new Intent(this, PermissionManagerService.class);
         startService(intent);
     }
