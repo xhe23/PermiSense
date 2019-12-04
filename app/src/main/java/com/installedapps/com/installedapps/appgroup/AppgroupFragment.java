@@ -1,5 +1,6 @@
 package com.installedapps.com.installedapps.appgroup;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.content.Intent;
 
 import java.util.*;
 
@@ -36,7 +38,15 @@ public class AppgroupFragment extends Fragment {
                 ViewModelProviders.of(this).get(AppgroupsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_appgroups, container, false);
         mAddAppgroup= root.findViewById(R.id.add_appgroup_button);
-        mAddAppgroup.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_navigation_appgroups_to_navigation_edit_appgroups));
+        mAddAppgroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Context context = view.getContext();
+                Intent intent = new Intent(context, AppList_AppGroupActivity.class);
+                intent.putExtra("isNewAppGroup", true);
+                context.startActivity(intent);
+            }
+        });
 
         mRecyclerView = root.findViewById(R.id.appgroup_list);
         mRecyclerView.setHasFixedSize(true);
