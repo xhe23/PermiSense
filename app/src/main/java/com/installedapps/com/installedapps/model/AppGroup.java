@@ -15,8 +15,9 @@ public class AppGroup {
 
     public String apps;
 
-    public AppGroup(String groupName) {
+    public AppGroup(String groupName, String apps) {
         this.groupName = groupName;
+        this.apps = apps;
     }
 
     public String getGroupName() {

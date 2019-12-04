@@ -7,6 +7,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
+import com.installedapps.com.installedapps.dao.AppgroupDao;
 import com.installedapps.com.installedapps.dao.RuleDao;
 import com.installedapps.com.installedapps.dao.ScenarioDao;
 import com.installedapps.com.installedapps.model.AppGroup;
@@ -19,6 +20,7 @@ import com.installedapps.com.installedapps.model.ScenarioDef;
 public abstract class AppDatabase extends RoomDatabase {
     public abstract RuleDao ruleDao();
     public abstract ScenarioDao scenarioDao();
+    public abstract AppgroupDao appgroupDao();
     private static AppDatabase instance = null;
 
     public static AppDatabase getInstance(Context appContext){
