@@ -9,9 +9,11 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.installedapps.com.installedapps.AppDatabase;
 import com.installedapps.com.installedapps.model.Scenario;
+import com.installedapps.com.installedapps.xposed.XposedPermissionSettings;
 
 import java.util.List;
 
@@ -43,6 +45,8 @@ public class PermissionManagerService extends Service {
         } else {
             startForeground(NOTIF_ID, new Notification.Builder(this).build());
         }
+
+        XposedPermissionSettings.runServer();
 
         reloadScenarios();
         return START_STICKY;
