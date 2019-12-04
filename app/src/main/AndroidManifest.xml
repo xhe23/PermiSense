@@ -26,6 +26,15 @@
             android:name=".scenarios.EditLocationActivity"
             android:label="@string/title_activity_add_location"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+        <meta-data
+            android:name="xposeddescription"
+            android:value="PermiSense Context-Aware Permission Manager" />
+        <meta-data
+            android:name="xposedminversion"
+            android:value="53" />
         <activity
             android:name=".scenarios.EditScheduleActivity"
             android:label="Edit schedule"></activity>
@@ -39,16 +48,6 @@
         <activity android:name=".AppDetailActivity" />
         <service android:name=".manager.PermissionManagerService" />
         <receiver android:name=".manager.LocationReceiver" />
-
-        <meta-data
-            android:name="xposedmodule"
-            android:value="true" />
-        <meta-data
-            android:name="xposeddescription"
-            android:value="PermiSense Context-Aware Permission Manager" />
-        <meta-data
-            android:name="xposedminversion"
-            android:value="53" />
     </application>
 
 </manifest>
