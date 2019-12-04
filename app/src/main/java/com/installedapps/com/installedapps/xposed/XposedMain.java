@@ -5,13 +5,15 @@ import android.os.Build;
 
 import com.installedapps.com.installedapps.BuildConfig;
 
+import java.util.HashMap;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 
 public class XposedMain implements IXposedHookLoadPackage {
-    private SensorHook sensorHook = null;
+    private HashMap<String, SensorHook> sensorHooks = new HashMap<>();
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         if (lpparam.packageName == null || lpparam.packageName.equals("android") ||
@@ -21,7 +23,8 @@ public class XposedMain implements IXposedHookLoadPackage {
     }
 
     private void hookApplication(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        sensorHook = new SensorHook(lpparam);
+        SensorHook sensorHook = new SensorHook(lpparam);
         sensorHook.hookSensors();
+        sensorHooks.put(lpparam.packageName, sensorHook);
     }
 }
