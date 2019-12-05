@@ -24,10 +24,10 @@ public class XposedMain implements IXposedHookLoadPackage, IXposedHookZygoteInit
     }
 
     private static String modulePath = null;
-    private static String nativeLibPath = null;
 
     private void hookApplication(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        nativeLibPath = mixLibPath(modulePath, lpparam.appInfo.nativeLibraryDir);
+        Log.i("PermiSenseHook", "hook: " + lpparam.packageName);
+        String nativeLibPath = mixLibPath(modulePath, lpparam.appInfo.nativeLibraryDir);
         Log.i("PermiSenseHook", "native lib: " + nativeLibPath);
         XposedPermissionSettings.load(nativeLibPath);
         SensorHook sensorHook = new SensorHook(lpparam);
@@ -50,9 +50,5 @@ public class XposedMain implements IXposedHookLoadPackage, IXposedHookZygoteInit
         File mpp = mp.getParentFile();
         if (mpp == null) return null;
         return mpp.getAbsolutePath() + "/lib/" + arch + "/libpermisense.so";
-    }
-
-    public static String getNativeLibPath() {
-        return nativeLibPath;
     }
 }

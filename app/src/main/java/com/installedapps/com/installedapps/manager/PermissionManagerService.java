@@ -12,6 +12,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.installedapps.com.installedapps.AppDatabase;
+import com.installedapps.com.installedapps.model.PermisensePermissions;
 import com.installedapps.com.installedapps.model.Scenario;
 import com.installedapps.com.installedapps.xposed.XposedPermissionSettings;
 

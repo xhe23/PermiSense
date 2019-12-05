@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import com.installedapps.com.installedapps.model.PermisensePermissions;
+import com.installedapps.com.installedapps.xposed.XposedPermissionSettings;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -67,7 +68,7 @@ public class PermissionOperator {
                             managerSu.addGrant(op.packageName, Manifest.permission.ACCESS_FINE_LOCATION);
                         break;
                     case PermisensePermissions.SENSOR:
-                        //TODO Sensor permission, also for revoke
+                        XposedPermissionSettings.grantPermission(op.packageName, String.valueOf(PermisensePermissions.SENSOR));
                         break;
                     case PermisensePermissions.MICROPHONE:
                         if (userPerms.contains(Manifest.permission.RECORD_AUDIO))
@@ -103,6 +104,7 @@ public class PermissionOperator {
                             managerSu.addRevoke(op.packageName, Manifest.permission.ACCESS_FINE_LOCATION);
                         break;
                     case PermisensePermissions.SENSOR:
+                        XposedPermissionSettings.revokePermission(op.packageName, String.valueOf(PermisensePermissions.SENSOR));
                         break;
                     case PermisensePermissions.MICROPHONE:
                         if (userPerms.contains(Manifest.permission.RECORD_AUDIO))

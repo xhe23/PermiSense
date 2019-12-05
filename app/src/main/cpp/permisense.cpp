@@ -18,6 +18,7 @@
 #include <string>
 #include <unordered_map>
 #include <shared_mutex>
+#include <unordered_set>
 
 using std::atomic_bool;
 using std::unique_ptr;
@@ -27,40 +28,109 @@ using std::unordered_map;
 using std::shared_timed_mutex;
 using std::unique_lock;
 using std::shared_lock;
+using std::unordered_set;
 
 char* SOCK_NAME = nullptr;
 std::thread serverThread;
 atomic_bool killing(false);
 shared_timed_mutex permMutex;
-unordered_map<string, vector<bool>> revokedPermissions;
+unordered_map<string, unordered_set<char>> revokedPermissions;
+unordered_map<string, int> socketsTracker;
 
 constexpr int TYPE_QUERY_PERMISSION = 0;
 constexpr int TYPE_INV = 255;
+
+void removeSocket(string sockname) {
+    auto it = socketsTracker.find(sockname);
+    if (it != socketsTracker.end()) {
+        shutdown(it->second, SHUT_RDWR);
+        close(it->second);
+    }
+    socketsTracker.erase(it);
+}
+
+void cleanSocket() {
+    for (auto& p: socketsTracker) {
+        shutdown(p.second, SHUT_RDWR);
+        close(p.second);
+    }
+    socketsTracker.clear();
+}
+
+void createSocket(string sockname) {
+    auto it = socketsTracker.find(sockname);
+    if (it != socketsTracker.end()) {
+        return;
+    }
+
+    struct sockaddr_un addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    addr.sun_path[0] = '\0';
+    strncpy(&addr.sun_path[1], SOCK_NAME, sizeof(addr.sun_path) - 1);
+    strncpy(&addr.sun_path[16], sockname.c_str(), sizeof(addr.sun_path) - 16);
+
+    int sockfd = socket(AF_UNIX, SOCK_SEQPACKET | SOCK_CLOEXEC, 0);
+    if (sockfd < 0) {
+        __android_log_print(ANDROID_LOG_ERROR, "PermiSense", "socket: %s", strerror(errno));
+        return;
+    }
+    if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
+        __android_log_print(ANDROID_LOG_ERROR, "PermiSense", "bind: %s", strerror(errno));
+        close(sockfd);
+        return;
+    }
+    if (listen(sockfd, 4) != 0) {
+        __android_log_print(ANDROID_LOG_ERROR, "PermiSense", "listen: %s", strerror(errno));
+        close(sockfd);
+        return;
+    }
+    socketsTracker[sockname] = sockfd;
+}
 
 void grantPermission(const string& packageName, const string& permissions) {
     unique_lock<shared_timed_mutex> lock(permMutex);
     auto it = revokedPermissions.find(packageName);
     if (it == revokedPermissions.end()) return;
     for (char perm: permissions) {
-        it->second[static_cast<uint8_t>(perm)] = false;
+        it->second.erase(perm);
+
+
+        string sockname;
+        sockname.push_back(perm);
+        sockname += packageName;
+        removeSocket(sockname);
     }
 }
+
 void revokePermission(const string& packageName, const string& permissions) {
+    __android_log_print(ANDROID_LOG_INFO, "PermiSense", "revoke %s %s", packageName.c_str(), permissions.c_str());
     unique_lock<shared_timed_mutex> lock(permMutex);
+    __android_log_print(ANDROID_LOG_INFO, "PermiSense", "lock");
     auto it = revokedPermissions.find(packageName);
     if (it == revokedPermissions.end()) {
-        revokedPermissions.insert({packageName, vector<bool>(false, 256)});
+        revokedPermissions.insert({packageName, unordered_set<char>{}});
         it = revokedPermissions.find(packageName);
     }
+    __android_log_print(ANDROID_LOG_INFO, "PermiSense", "foreach");
     for (char perm: permissions) {
-        it->second[static_cast<uint8_t>(perm)] = true;
+        __android_log_print(ANDROID_LOG_INFO, "PermiSense", "perm: %u", static_cast<uint8_t>(perm));
+        it->second.insert(perm);
+
+        __android_log_print(ANDROID_LOG_INFO, "PermiSense", "createsock");
+
+        string sockname;
+        sockname.push_back(perm);
+        sockname += packageName;
+        createSocket(sockname);
     }
 }
+
 bool queryPermission(const string& packageName, char permission) {
     shared_lock<shared_timed_mutex> lock(permMutex);
     auto it = revokedPermissions.find(packageName);
     if (it == revokedPermissions.end()) return true;
-    return !it->second[static_cast<uint8_t>(permission)];
+    return it->second.find(permission) == it->second.end();
 }
 
 void handleRequest(vector<uint8_t> &buf) {
@@ -135,10 +205,12 @@ void startServer() {
     strncpy(&addr.sun_path[1], SOCK_NAME, sizeof(addr.sun_path) - 1);
     if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
         __android_log_print(ANDROID_LOG_ERROR, "PermiSense", "bind: %s", strerror(errno));
+        close(sockfd);
         return;
     }
     if (listen(sockfd, 16) != 0) {
         __android_log_print(ANDROID_LOG_ERROR, "PermiSense", "listen: %s", strerror(errno));
+        close(sockfd);
         return;
     }
     serverThread = std::thread(server, sockfd);
@@ -157,6 +229,7 @@ bool makeRequest(vector<uint8_t>& buf) {
     }
     if (connect(sockfd, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
         __android_log_print(ANDROID_LOG_ERROR, "PermiSense", "connect: %s", strerror(errno));
+        close(sockfd);
         return false;
     }
     if (send(sockfd, buf.data(), buf.size(), 0) < 0) {
@@ -177,6 +250,52 @@ bool makeRequest(vector<uint8_t>& buf) {
     return true;
 }
 
+int alternativeQuery(const string &packageName, char permission) {
+    string sockname;
+    sockname.push_back(permission);
+    sockname += packageName;
+
+    struct sockaddr_un addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    addr.sun_path[0] = '\0';
+    strncpy(&addr.sun_path[1], SOCK_NAME, sizeof(addr.sun_path) - 1);
+
+    int sockfd = socket(AF_UNIX, SOCK_SEQPACKET | SOCK_CLOEXEC, 0);
+    if (sockfd < 0) {
+        return -1;
+    }
+    if (connect(sockfd, (struct sockaddr*)&addr, sizeof(addr)) != -1 || errno != EACCES) {
+        close(sockfd);
+        return -1;
+    }
+    shutdown(sockfd, SHUT_RDWR);
+    close(sockfd);
+
+    __android_log_print(ANDROID_LOG_ERROR, "PermiSense", "running alternative query");
+
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    addr.sun_path[0] = '\0';
+    strncpy(&addr.sun_path[1], SOCK_NAME, sizeof(addr.sun_path) - 1);
+    strncpy(&addr.sun_path[16], sockname.c_str(), sizeof(addr.sun_path) - 16);
+
+    sockfd = socket(AF_UNIX, SOCK_SEQPACKET | SOCK_CLOEXEC, 0);
+    if (sockfd < 0) {
+        __android_log_print(ANDROID_LOG_ERROR, "PermiSense", "socket: %s", strerror(errno));
+        return -1;
+    }
+    int res;
+    if (connect(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == 0 || errno == EACCES) {
+        res = 0;
+    } else {
+        res = 1;
+    }
+    shutdown(sockfd, SHUT_RDWR);
+    close(sockfd);
+    return res;
+}
+
 int queryPermissionRequest(const string &packageName, char permission) {
     vector<uint8_t> buf;
     buf.reserve(1024);
@@ -188,7 +307,8 @@ int queryPermissionRequest(const string &packageName, char permission) {
         buf.push_back((uint8_t) c);
     }
     if (!makeRequest(buf)) {
-        return -1;
+//        return -1;
+        return alternativeQuery(packageName, permission);
     }
     return buf[0];
 }
@@ -200,6 +320,7 @@ void stopServer() {
     buf.push_back(TYPE_INV);
     makeRequest(buf);
     serverThread.join();
+    cleanSocket();
 }
 
 extern "C" {
