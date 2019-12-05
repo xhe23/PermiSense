@@ -18,6 +18,7 @@
 #include <string>
 #include <unordered_map>
 #include <shared_mutex>
+#include <unordered_set>
 
 using std::atomic_bool;
 using std::unique_ptr;
@@ -27,12 +28,13 @@ using std::unordered_map;
 using std::shared_timed_mutex;
 using std::unique_lock;
 using std::shared_lock;
+using std::unordered_set;
 
 char* SOCK_NAME = nullptr;
 std::thread serverThread;
 atomic_bool killing(false);
 shared_timed_mutex permMutex;
-unordered_map<string, vector<bool>> revokedPermissions;
+unordered_map<string, unordered_set<char>> revokedPermissions;
 unordered_map<string, int> socketsTracker;
 
 constexpr int TYPE_QUERY_PERMISSION = 0;
@@ -91,7 +93,7 @@ void grantPermission(const string& packageName, const string& permissions) {
     auto it = revokedPermissions.find(packageName);
     if (it == revokedPermissions.end()) return;
     for (char perm: permissions) {
-        it->second[static_cast<uint8_t>(perm)] = false;
+        it->second.erase(perm);
 
 
         string sockname;
@@ -102,15 +104,20 @@ void grantPermission(const string& packageName, const string& permissions) {
 }
 
 void revokePermission(const string& packageName, const string& permissions) {
+    __android_log_print(ANDROID_LOG_INFO, "PermiSense", "revoke %s %s", packageName.c_str(), permissions.c_str());
     unique_lock<shared_timed_mutex> lock(permMutex);
+    __android_log_print(ANDROID_LOG_INFO, "PermiSense", "lock");
     auto it = revokedPermissions.find(packageName);
     if (it == revokedPermissions.end()) {
-        revokedPermissions.insert({packageName, vector<bool>(false, 256)});
+        revokedPermissions.insert({packageName, unordered_set<char>{}});
         it = revokedPermissions.find(packageName);
     }
+    __android_log_print(ANDROID_LOG_INFO, "PermiSense", "foreach");
     for (char perm: permissions) {
-        it->second[static_cast<uint8_t>(perm)] = true;
+        __android_log_print(ANDROID_LOG_INFO, "PermiSense", "perm: %u", static_cast<uint8_t>(perm));
+        it->second.insert(perm);
 
+        __android_log_print(ANDROID_LOG_INFO, "PermiSense", "createsock");
 
         string sockname;
         sockname.push_back(perm);
@@ -123,7 +130,7 @@ bool queryPermission(const string& packageName, char permission) {
     shared_lock<shared_timed_mutex> lock(permMutex);
     auto it = revokedPermissions.find(packageName);
     if (it == revokedPermissions.end()) return true;
-    return !it->second[static_cast<uint8_t>(permission)];
+    return it->second.find(permission) == it->second.end();
 }
 
 void handleRequest(vector<uint8_t> &buf) {
