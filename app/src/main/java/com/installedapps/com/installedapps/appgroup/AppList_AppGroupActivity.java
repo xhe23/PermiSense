@@ -7,16 +7,28 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.installedapps.com.installedapps.AppAdapter;
+import com.installedapps.com.installedapps.AppDatabase;
 import com.installedapps.com.installedapps.AppModel;
 import com.installedapps.com.installedapps.R;
+import com.installedapps.com.installedapps.dao.AppgroupDao;
+import com.installedapps.com.installedapps.dao.RuleDao;
+import com.installedapps.com.installedapps.model.AppGroup;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,9 +46,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class AppList_AppGroupActivity extends AppCompatActivity {
     private TextView mTextView;
+    private EditText mEditText;
+    private Button mButton;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private String integratedApps;
+    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,13 +63,43 @@ public class AppList_AppGroupActivity extends AppCompatActivity {
         String mAppGroupName = i.getStringExtra("appGroup");
         mRecyclerView = findViewById(R.id.applist_appgroup_recycler);
         mTextView = findViewById(R.id.appgroup_name_on_app_list);
+        mEditText = findViewById(R.id.appgroup_name_edit);
+        mButton = findViewById(R.id.button_save_applist_appgroup);
         if(isNewAppGroup){
             System.out.println("newAppGroup");
+            mTextView.setText("Input new AppGroup Name");
+            mButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    RelativeLayout relativeLayout = (RelativeLayout)findViewById(R.id.layout_applist_appgroup);
+                    integratedApps = "";
+                    traversalView((ViewGroup)relativeLayout);
+                    System.out.println(mEditText.getText().toString());
+                    System.out.println(integratedApps);
+                    AppGroup appGroup = new AppGroup(mEditText.getText().toString(), integratedApps);
+                    AsyncTask addAppgroupTask=new AsyncTask<Object,Void,Integer>(){
+                        @Override
+                        protected Integer doInBackground(Object... params) {
+                        AppgroupDao dao = AppDatabase.getInstance(AppList_AppGroupActivity.this).appgroupDao();
+                        dao.insert(appGroup);
+                        AppList_AppGroupActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(AppList_AppGroupActivity.this,"app group added successfully!",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        return null;
+                        }
+                    };
+                    addAppgroupTask.execute();
+                }
+            });
         }
         else{
             mTextView.setText(mAppGroupName);
+            mEditText.setVisibility(View.INVISIBLE);
         }
-
 
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -65,6 +111,37 @@ public class AppList_AppGroupActivity extends AppCompatActivity {
         //mRecyclerView.setLayoutManager(mLayoutManager);
 
         init();
+    }
+
+    private void traversalView(ViewGroup rootView) {
+        for(int i = 0; i<rootView.getChildCount(); i++)
+        {
+            View childVg = rootView.getChildAt(i);
+            if(childVg instanceof ViewGroup){
+                if(childVg instanceof LinearLayout){
+                    ViewGroup app = (ViewGroup) childVg;
+                    int numChildren = app.getChildCount();
+                    if(numChildren == 3){
+                        View v1 = app.getChildAt(0);
+                        View v2 = app.getChildAt(1);
+                        View v3 = app.getChildAt(2);
+                        if(v1 instanceof ImageView && v2 instanceof TextView && v3 instanceof Switch){
+                            ImageView e1 = (ImageView)v1;
+                            TextView e2 = (TextView)v2;
+                            Switch e3 = (Switch)v3;
+                            if(e3.isChecked()){
+                                System.out.println(e2.getText());
+                                integratedApps += "#" + e2.getText();
+                            }
+                        }
+                    }
+                }
+                traversalView((ViewGroup) childVg);
+            }
+            else
+                count++;
+        }
+        count++; //统计本布局控件
     }
 
     private void init() {

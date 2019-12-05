@@ -32,6 +32,7 @@ public class PermissionManagerService extends Service {
     @Override
     public void onCreate() {
         PermissionManager.getInstance().setContext(this);
+        XposedPermissionSettings.load();
         XposedPermissionSettings.runServer();
     }
 

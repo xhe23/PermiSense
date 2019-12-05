@@ -68,6 +68,9 @@ public class AppgroupFragment extends Fragment {
         protected Void doInBackground(Object... objects) {
             appGroups.clear();
             appGroups.addAll(AppDatabase.getInstance(getContext()).appgroupDao().getAll());
+            for (AppGroup appGroup : appGroups) {
+                System.out.println(appGroup.apps);
+            }
             try {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
