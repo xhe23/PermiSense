@@ -19,11 +19,13 @@ public class AppModel {
     private String name;
     Drawable icon;
     private String packageName;
+    public boolean isInAppGroup;
 
     public AppModel(String name, Drawable icon, String packageName) {
         this.name = name;
         this.icon = icon;
         this.packageName = packageName;
+        isInAppGroup = false;
     }
 
     public String getName() {

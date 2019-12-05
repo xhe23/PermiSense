@@ -70,6 +70,7 @@ public class AppGroupAdapter extends RecyclerView.Adapter<AppGroupAdapter.AppGro
             Context context = view.getContext();
             Intent intent = new Intent(context, AppList_AppGroupActivity.class);
             intent.putExtra("appGroup", item.groupName);
+            intent.putExtra("apps", item.apps);
             intent.putExtra("isNewAppGroup", false);
 
             context.startActivity(intent);
