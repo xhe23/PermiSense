@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,10 +20,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.installedapps.com.installedapps.AppAdapter;
+import com.installedapps.com.installedapps.AppDatabase;
 import com.installedapps.com.installedapps.AppModel;
 import com.installedapps.com.installedapps.R;
+import com.installedapps.com.installedapps.dao.AppgroupDao;
+import com.installedapps.com.installedapps.dao.RuleDao;
 import com.installedapps.com.installedapps.model.AppGroup;
 
 import java.util.ArrayList;
@@ -72,7 +77,22 @@ public class AppList_AppGroupActivity extends AppCompatActivity {
                     System.out.println(mEditText.getText().toString());
                     System.out.println(integratedApps);
                     AppGroup appGroup = new AppGroup(mEditText.getText().toString(), integratedApps);
-
+                    AsyncTask addAppgroupTask=new AsyncTask<Object,Void,Integer>(){
+                        @Override
+                        protected Integer doInBackground(Object... params) {
+                        AppgroupDao dao = AppDatabase.getInstance(AppList_AppGroupActivity.this).appgroupDao();
+                        dao.insert(appGroup);
+                        AppList_AppGroupActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(AppList_AppGroupActivity.this,"app group added successfully!",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        return null;
+                        }
+                    };
+                    addAppgroupTask.execute();
                 }
             });
         }
