@@ -40,6 +40,7 @@
         <activity android:name=".appgroup.AppList_AppGroupFragment"/>
         <service android:name=".manager.PermissionManagerService" />
         <receiver android:name=".manager.LocationReceiver" />
+        <receiver android:name=".manager.ScheduleReceiver" />
     </application>
 
 </manifest>

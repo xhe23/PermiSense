@@ -1,0 +1,62 @@
+package com.installedapps.com.installedapps.manager;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+
+import com.installedapps.com.installedapps.model.Scenario;
+import com.installedapps.com.installedapps.model.ScenarioDef;
+import com.installedapps.com.installedapps.model.ScenarioTimeDef;
+
+public class ScheduleMonitor extends ScenarioMonitor {
+    private static final long MILLIS_IN_DAY = 86400000L;
+    private static final long YEAR_2100 = 4102473600000L;
+    private static final long ONE_HUNDRED_YEARS = 3153600000000L;
+    private ScenarioTimeDef definition;
+    private boolean activated;
+
+    public ScheduleMonitor(Scenario s) {
+        super(s.name);
+        definition = (ScenarioTimeDef)s.definition;
+        activated = false;
+    }
+
+    @Override
+    public void startMonitor() {
+        PermissionManager permissionManager = PermissionManager.getInstance();
+        AlarmManager m1 = (AlarmManager)permissionManager.context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager m2 = (AlarmManager)permissionManager.context.getSystemService(Context.ALARM_SERVICE);
+
+        Intent startIntent = new Intent(permissionManager.context, ScheduleReceiver.class);
+        startIntent.putExtra("is_start", true);
+        startIntent.putExtra("scenario_name", this.getName());
+        PendingIntent p1 = PendingIntent.getBroadcast(permissionManager.context, (int)System.currentTimeMillis(), startIntent, PendingIntent.FLAG_ONE_SHOT);
+        if(definition.startTime > YEAR_2100) {
+            m1.setRepeating(AlarmManager.RTC_WAKEUP, definition.startTime - ONE_HUNDRED_YEARS, MILLIS_IN_DAY, p1);
+        } else {
+            m1.setExact(AlarmManager.RTC_WAKEUP, definition.startTime, p1);
+            Log.i("PermiSense", "added start time " + definition.startTime);
+        }
+
+        Intent endIntent = new Intent(permissionManager.context, ScheduleReceiver.class);
+        endIntent.putExtra("is_start", false);
+        endIntent.putExtra("scenario_name", this.getName());
+        PendingIntent p2 = PendingIntent.getBroadcast(permissionManager.context, (int)System.currentTimeMillis(), endIntent, PendingIntent.FLAG_ONE_SHOT);
+        if(definition.startTime > YEAR_2100) {
+            m2.setRepeating(AlarmManager.RTC_WAKEUP, definition.endTime, MILLIS_IN_DAY, p2);
+        } else {
+            m2.setExact(AlarmManager.RTC_WAKEUP, definition.endTime, p2);
+            Log.i("PermiSense", "added end time " + definition.endTime);
+        }
+
+
+        Log.i("PermiSense", "schedule monitor " + this.getName() + " enabled");
+    }
+
+    @Override
+    public void stopMonitor() {
+
+    }
+}
