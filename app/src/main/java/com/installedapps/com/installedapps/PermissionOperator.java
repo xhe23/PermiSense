@@ -50,7 +50,7 @@ public class PermissionOperator {
         getInstance().originalPermissions=p;
     }
 
-    public int apply(Collection<PermissionOperation> operations){
+    public synchronized int apply(Collection<PermissionOperation> operations){
         int cnt=0;
         PermissionManagerSu managerSu=new PermissionManagerSu();
         managerSu.open();

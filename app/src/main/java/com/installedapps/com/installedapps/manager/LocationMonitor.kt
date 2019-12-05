@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap
 
 class LocationMonitor(s: Scenario) : ScenarioMonitor(s.name) {
     private var definition: ScenarioLocationDef = s.definition as ScenarioLocationDef
-    private var activated = false
     init {
         Log.i("PermiSense", String.format("Create location monitor, name = %s, lat = %f, lon = %f, r = %f", name, definition.lat, definition.lon, definition.radius))
     }
