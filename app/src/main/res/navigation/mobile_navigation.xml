@@ -14,13 +14,13 @@
     <fragment
         android:id="@+id/navigation_sceanrio"
         android:name="com.installedapps.com.installedapps.scenarios.ScenarioListFragment"
-        android:label="@string/title_dashboard"
+        android:label="Scenarios"
         tools:layout="@layout/fragment_scenario_list" />
 
     <fragment
         android:id="@+id/navigation_appgroups"
         android:name="com.installedapps.com.installedapps.appgroup.AppgroupFragment"
-        android:label="@string/title_notifications"
+        android:label="App Groups"
         tools:layout="@layout/fragment_appgroups" >
         <action
             android:id="@+id/action_navigation_appgroups_to_navigation_edit_appgroups"
