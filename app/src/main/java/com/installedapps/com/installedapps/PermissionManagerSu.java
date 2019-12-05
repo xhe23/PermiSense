@@ -1,7 +1,9 @@
 package com.installedapps.com.installedapps;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class PermissionManagerSu {
     public static int grantPermission(String packageName, String manifestPermission){
@@ -39,9 +41,15 @@ public class PermissionManagerSu {
     }
 
     public int close(){
+        BufferedReader stdInput = new BufferedReader(new
+                InputStreamReader(su.getInputStream()));
+        String s = null;
         try {
             os.flush();
             su.destroy();
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println(s);
+            }
             os=null;
             su=null;
         }catch (IOException e){
