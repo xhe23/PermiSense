@@ -11,5 +11,6 @@ public class ScheduleReceiver extends BroadcastReceiver {
         String scenarioName = intent.getStringExtra("scenario_name");
         boolean isStart = intent.getBooleanExtra("is_start", true);
         Log.i("PermiSense", scenarioName + " is started ? " + isStart);
+        ScheduleMonitor.onEvent(scenarioName, isStart);
     }
 }
