@@ -1,5 +1,6 @@
 package com.installedapps.com.installedapps.appgroup;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import com.installedapps.com.installedapps.AppAdapter;
 import com.installedapps.com.installedapps.AppDatabase;
 import com.installedapps.com.installedapps.AppModel;
+import com.installedapps.com.installedapps.MainActivity;
 import com.installedapps.com.installedapps.R;
 import com.installedapps.com.installedapps.dao.AppgroupDao;
 import com.installedapps.com.installedapps.dao.RuleDao;
@@ -32,6 +34,7 @@ import com.installedapps.com.installedapps.model.AppGroup;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -53,6 +56,10 @@ public class AppList_AppGroupActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private String integratedApps;
     private int count = 0;
+    private String mAppGroupName;
+    private ArrayList<AppGroup> appGroups;
+    private HashSet<String> set = new HashSet<>();
+    private String apps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +67,8 @@ public class AppList_AppGroupActivity extends AppCompatActivity {
         setContentView(R.layout.fragment_applist_appgroup);
         Intent i = getIntent();
         boolean isNewAppGroup = i.getBooleanExtra("isNewAppGroup", false);
-        String mAppGroupName = i.getStringExtra("appGroup");
+        mAppGroupName = i.getStringExtra("appGroup");
+        apps = i.getStringExtra("apps");
         mRecyclerView = findViewById(R.id.applist_appgroup_recycler);
         mTextView = findViewById(R.id.appgroup_name_on_app_list);
         mEditText = findViewById(R.id.appgroup_name_edit);
@@ -93,6 +101,11 @@ public class AppList_AppGroupActivity extends AppCompatActivity {
                         }
                     };
                     addAppgroupTask.execute();
+
+                    Context context = AppList_AppGroupActivity.this;
+                    Intent intent = new Intent(context, MainActivity.class);
+                    intent.putExtra("Fragment", "appgroup");
+                    context.startActivity(intent);
                 }
             });
         }
@@ -141,12 +154,23 @@ public class AppList_AppGroupActivity extends AppCompatActivity {
             else
                 count++;
         }
-        count++; //统计本布局控件
+        count++;
     }
 
     private void init() {
+        String[] packageNames = apps.split("#");
+        set = new HashSet<>();
+
+        for(String packageName : packageNames){
+            set.add(packageName);
+        }
 
         List<AppModel> arrayList = getInstalledApps();
+        for(AppModel appModel : arrayList){
+            if(set.contains(appModel.getPackageName())){
+                appModel.isInAppGroup = true;
+            }
+        }
         mAdapter = new AppAdapterInAppGroup(arrayList);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -173,4 +197,5 @@ public class AppList_AppGroupActivity extends AppCompatActivity {
         }
         return arrayList;
     }
+
 }

@@ -42,8 +42,11 @@ public class AppAdapterInAppGroup extends RecyclerView.Adapter<AppAdapterInAppGr
 
     @Override
     public void onBindViewHolder(@NonNull AppGroupAppViewHolder holder, int position) {
-        holder.mAppName.setText(arrayList.get(position).getPackageName());
-        holder.mImageView.setImageDrawable(arrayList.get(position).getIcon());
+        AppModel appModel = arrayList.get(position);
+        holder.mAppName.setText(appModel.getPackageName());
+        holder.mImageView.setImageDrawable(appModel.getIcon());
+        if(appModel.isInAppGroup)
+            holder.mSwitch.setChecked(true);
 
         holder.itemView.setTag(arrayList.get(position));
         holder.itemView.setOnClickListener(mOnClickListener);
