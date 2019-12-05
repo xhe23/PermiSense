@@ -50,12 +50,19 @@ public class PermissionManager {
         @Override
         protected Void doInBackground(Object... objects) {
             AppDatabase db=AppDatabase.getInstance(context);
-            //TODO: use the real app group...
-            String target="com.google.android.apps.maps";
-            List<PermissionOperation> operations=new ArrayList<>();
-            for (int i=0;i<permissions.length();++i)
-                operations.add(new PermissionOperation(target,operation,permissions.charAt(i)));
-            PermissionOperator.getInstance().apply(operations);
+            List<AppGroup> groups=db.appgroupDao().getAll();
+            for (AppGroup g:groups){
+                if (g.getGroupName().equals(appGroupName)){
+                    String[] targets=g.apps.split("#");
+                    for (String target:targets){
+                        if (target==null || target.length()==0) continue;
+                        List<PermissionOperation> operations=new ArrayList<>();
+                        for (int i=0;i<permissions.length();++i)
+                            operations.add(new PermissionOperation(target,operation,permissions.charAt(i)));
+                        PermissionOperator.getInstance().apply(operations);
+                    }
+                }
+            }
             return null;
         }
     }

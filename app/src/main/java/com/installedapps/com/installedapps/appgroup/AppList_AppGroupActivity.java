@@ -162,14 +162,14 @@ public class AppList_AppGroupActivity extends AppCompatActivity {
         String packageName = "";
         for (int i = 0; i < packs.size(); i++) {
             PackageInfo p = packs.get(i);
-            //if ((isSystemPackage(p) == false)) {
+            if ((p.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                 appName = p.applicationInfo.loadLabel(this.getPackageManager()).toString();
                 Drawable icon = p.applicationInfo.loadIcon(this.getPackageManager());
                 packageName = p.applicationInfo.packageName;
                 Log.e("packageName", packageName);
                 arrayList.add(new AppModel(appName, icon, packageName));
                 //Log.e("appName:", appName);
-            //}
+            }
         }
         return arrayList;
     }
