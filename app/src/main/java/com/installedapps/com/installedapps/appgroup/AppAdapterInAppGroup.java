@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ public class AppAdapterInAppGroup extends RecyclerView.Adapter<AppAdapterInAppGr
 
     @Override
     public void onBindViewHolder(@NonNull AppGroupAppViewHolder holder, int position) {
-        holder.mAppName.setText(arrayList.get(position).getName());
+        holder.mAppName.setText(arrayList.get(position).getPackageName());
         holder.mImageView.setImageDrawable(arrayList.get(position).getIcon());
 
         holder.itemView.setTag(arrayList.get(position));
@@ -59,10 +61,13 @@ public class AppAdapterInAppGroup extends RecyclerView.Adapter<AppAdapterInAppGr
         // each data item is just a string in this case
         public TextView mAppName;
         public ImageView mImageView;
+        public Switch mSwitch;
         public AppGroupAppViewHolder(View v) {
             super(v);
             mAppName = v.findViewById(R.id.list_app_name_appgroup);
             mImageView = v.findViewById(R.id.app_icon_appgroup);
+            mSwitch = v.findViewById(R.id.switch_applist_appgroup);
+
         }
     }
 
