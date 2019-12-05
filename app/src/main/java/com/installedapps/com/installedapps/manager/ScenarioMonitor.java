@@ -6,7 +6,9 @@ import com.installedapps.com.installedapps.model.ScenarioTimeDef;
 
 public abstract class ScenarioMonitor {
     private String name;
-    protected String getName() {
+    protected boolean activated=false;
+
+    public String getName() {
         return name;
     }
     public ScenarioMonitor(String name) {
@@ -22,5 +24,9 @@ public abstract class ScenarioMonitor {
             return new ScheduleMonitor(s);
         }
         throw new UnsupportedOperationException("Undefined scenario type: " + s.definition.getClass().getName());
+    }
+
+    public boolean isActivated() {
+        return activated;
     }
 }

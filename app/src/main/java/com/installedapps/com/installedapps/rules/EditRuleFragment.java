@@ -21,8 +21,11 @@ import androidx.navigation.Navigation;
 import com.installedapps.com.installedapps.AppDatabase;
 import com.installedapps.com.installedapps.R;
 import com.installedapps.com.installedapps.dao.RuleDao;
+import com.installedapps.com.installedapps.manager.PermissionManager;
+import com.installedapps.com.installedapps.model.AppGroup;
 import com.installedapps.com.installedapps.model.PermisensePermissions;
 import com.installedapps.com.installedapps.model.Rule;
+import com.installedapps.com.installedapps.model.Scenario;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,9 +33,9 @@ import java.util.List;
 import java.util.Map;
 
 public class EditRuleFragment extends Fragment {
-    //TODO: change to get from other's work
-    String[] scenarios={"s1","s2","s3","s4"};
-    String[] appgroups={"g1","g2","g3","g4"};
+    //changed to get from other's work
+//    String[] scenarios={"s1","s2","s3","s4"};
+//    String[] appgroups={"g1","g2","g3","g4"};
 
     private Spinner mScenario;
     private Spinner mAppGroup;
@@ -82,6 +85,7 @@ public class EditRuleFragment extends Fragment {
                 protected Integer doInBackground(Object... params) {
                     RuleDao dao=AppDatabase.getInstance(getContext()).ruleDao();
                     toAdd.ruleId=dao.insert(toAdd);
+                    PermissionManager.getInstance().addRule(toAdd);
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -107,15 +111,46 @@ public class EditRuleFragment extends Fragment {
 //        }
 //    }
 
+
+    private class InitSceGrpFromDb extends AsyncTask<Object,Void,Void>{
+        @Override
+        protected Void doInBackground(Object... objects) {
+            AppDatabase db=AppDatabase.getInstance(getContext());
+            List<Scenario> scenarios=db.scenarioDao().getAll();
+            String[] scenerioNames=new String[scenarios.size()];
+            for (int i=0;i<scenerioNames.length;++i){
+                scenerioNames[i]=scenarios.get(i).name;
+            }
+
+            List<AppGroup> appGroups=db.appgroupDao().getAll();
+            String[] appGroupNames=new String[appGroups.size()];
+            for (int i=0;i<appGroupNames.length;++i){
+                appGroupNames[i]=appGroups.get(i).groupName;
+            }
+
+            try {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ArrayAdapter<String> scenariosAdapter=new ArrayAdapter<String>(getContext(),
+                                R.layout.support_simple_spinner_dropdown_item,scenerioNames);
+                        mScenario.setAdapter(scenariosAdapter);
+
+                        ArrayAdapter<String> appgroupsAdapter=new ArrayAdapter<String>(getContext(),
+                                R.layout.support_simple_spinner_dropdown_item,appGroupNames);
+                        mAppGroup.setAdapter(appgroupsAdapter);
+
+                    }
+                });
+            }catch (NullPointerException e){
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
+
     private void init(){
-        ArrayAdapter<String> scenariosAdapter=new ArrayAdapter<String>(getContext(),
-                R.layout.support_simple_spinner_dropdown_item,scenarios);
-        mScenario.setAdapter(scenariosAdapter);
-
-        ArrayAdapter<String> appgroupsAdapter=new ArrayAdapter<String>(getContext(),
-                R.layout.support_simple_spinner_dropdown_item,appgroups);
-        mAppGroup.setAdapter(appgroupsAdapter);
-
         mPermissionCheckboxes=new ArrayList<>(10);
         for (String perm: PermisensePermissions.names){
             CheckBox cb=new CheckBox(getContext());
@@ -126,6 +161,6 @@ public class EditRuleFragment extends Fragment {
             mPermissionsLayout.addView(cb);
         }
 
-
+        new InitSceGrpFromDb().execute();
     }
 }

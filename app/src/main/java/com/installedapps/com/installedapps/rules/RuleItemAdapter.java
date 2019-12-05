@@ -1,59 +1,77 @@
 package com.installedapps.com.installedapps.rules;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.installedapps.com.installedapps.R;
+import com.installedapps.com.installedapps.ScenarioAdapter;
 import com.installedapps.com.installedapps.model.Rule;
+import com.installedapps.com.installedapps.model.Scenario;
+import com.installedapps.com.installedapps.model.ScenarioDef;
+import com.installedapps.com.installedapps.model.ScenarioLocationDef;
+import com.installedapps.com.installedapps.model.ScenarioTimeDef;
+import com.installedapps.com.installedapps.scenarios.EditLocationActivity;
+import com.installedapps.com.installedapps.scenarios.EditScheduleActivity;
 
 import java.util.List;
 
 //copied from https://developer.android.com/guide/topics/ui/layout/recyclerview
-public class RuleItemAdapter extends RecyclerView.Adapter<RuleItemAdapter.MyViewHolder> {
+public class RuleItemAdapter extends RecyclerView.Adapter<RuleItemAdapter.ViewHolder> {
     private List<Rule> mDataset;
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        public TextView textView;
-        public MyViewHolder(TextView v) {
-            super(v);
-            textView = v;
-        }
+    public RuleItemAdapter(List<Rule> mDataset) {
+        this.mDataset = mDataset;
     }
 
-    public String ruleToName(Rule rule){
+    public static String ruleToName(Rule rule){
         return String.format("%s_%s_%d",rule.scenarioName,rule.groupName,rule.ruleId);
     }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
-    public RuleItemAdapter(List<Rule> myDataset) {
-        mDataset = myDataset;
-    }
-
-    // Create new views (invoked by the layout manager)
+    @NonNull
     @Override
-    public RuleItemAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
+    public RuleItemAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // create a new view
-//        TextView v = (TextView) LayoutInflater.from(parent.getContext())
-//                .inflate(R.layout.rule_view, parent, false);
-        TextView v=new TextView(parent.getContext());
-        return new MyViewHolder(v);
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.scenario_list_item, parent, false);
+        RuleItemAdapter.ViewHolder vh = new RuleItemAdapter.ViewHolder(v, parent.getContext());
+        return vh;
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        holder.textView.setText(ruleToName(mDataset.get(position)));
+    public void onBindViewHolder(@NonNull RuleItemAdapter.ViewHolder vh, int pos) {
+        Rule s = mDataset.get(pos);
+        vh.setRule(s);
+    }
 
+    public void updateData(List<Rule> s) {
+        mDataset = s;
+        notifyDataSetChanged();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        private TextView mScenarioNameView;
+        private ImageView mScenarioIndicatorView;
+        private Rule rule;
+        private Context context;
+        public ViewHolder(View v, Context context) {
+            super(v);
+            this.context = context;
+            mScenarioNameView = v.findViewById(R.id.scenario_name);
+            mScenarioIndicatorView = v.findViewById(R.id.scenario_indicator);
+        }
+        public void setRule(Rule r) {
+            rule = r;
+            mScenarioNameView.setText(RuleItemAdapter.ruleToName(r));
+            mScenarioIndicatorView.setImageDrawable(context.getDrawable(R.drawable.ic_lock_24px));
+        }
     }
 
 

@@ -13,11 +13,11 @@ public class AppGroup {
     @NonNull
     public String groupName;
 
-    //public HashSet<String> apps;
+    public String apps;
 
-    public AppGroup(String groupName) {
+    public AppGroup(String groupName, String apps) {
         this.groupName = groupName;
-        //apps = new HashSet<>();
+        this.apps = apps;
     }
 
     public String getGroupName() {

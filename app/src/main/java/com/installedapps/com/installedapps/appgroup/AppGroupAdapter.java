@@ -40,8 +40,6 @@ public class AppGroupAdapter extends RecyclerView.Adapter<AppGroupAdapter.AppGro
 
     @Override
     public void onBindViewHolder(@NonNull AppGroupViewHolder holder, int position) {
-        String s = arrayList.get(position).groupName;
-        System.out.println("position name" + s);
         holder.mAppGroupName.setText(arrayList.get(position).getGroupName());
 
         holder.itemView.setTag(arrayList.get(position));
@@ -70,10 +68,9 @@ public class AppGroupAdapter extends RecyclerView.Adapter<AppGroupAdapter.AppGro
         public void onClick(View view) {
             AppGroup item = (AppGroup) view.getTag();
             Context context = view.getContext();
-            Intent intent = new Intent(context, AppList_AppGroupFragment.class);
+            Intent intent = new Intent(context, AppList_AppGroupActivity.class);
             intent.putExtra("appGroup", item.groupName);
-            intent.putExtra("app-name", "test_app_name");
-            intent.putExtra("package-name", "test_package_name");
+            intent.putExtra("isNewAppGroup", false);
 
             context.startActivity(intent);
         }

@@ -9,9 +9,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.installedapps.com.installedapps.AppDatabase;
+import com.installedapps.com.installedapps.model.PermisensePermissions;
 import com.installedapps.com.installedapps.model.Scenario;
+import com.installedapps.com.installedapps.xposed.XposedPermissionSettings;
 
 import java.util.List;
 
@@ -30,6 +33,8 @@ public class PermissionManagerService extends Service {
     @Override
     public void onCreate() {
         PermissionManager.getInstance().setContext(this);
+        XposedPermissionSettings.load();
+        XposedPermissionSettings.runServer();
     }
 
     @Override
@@ -56,6 +61,7 @@ public class PermissionManagerService extends Service {
     @Override
     public void onDestroy() {
         PermissionManager.getInstance().setContext(null);
+        XposedPermissionSettings.killServer();
     }
 
     private void reloadScenarios() {
