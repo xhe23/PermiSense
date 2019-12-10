@@ -1,5 +1,7 @@
 package com.installedapps.com.installedapps;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -46,10 +48,6 @@ public class PermissionManagerSu {
         String s = null;
         try {
             os.flush();
-            su.destroy();
-            while ((s = stdInput.readLine()) != null) {
-                System.out.println(s);
-            }
             os=null;
             su=null;
         }catch (IOException e){
@@ -62,7 +60,8 @@ public class PermissionManagerSu {
     public int addGrant(String packageName, String manifestPermission){
         if (os==null) return -1;
         try {
-            os.writeBytes(String.format("pm grant %s %s",packageName,manifestPermission));
+            Log.i("PermissionManagerSu",String.format("pm grant %s %s\n",packageName,manifestPermission));
+            os.writeBytes(String.format("pm grant %s %s\n",packageName,manifestPermission));
         }catch (IOException e){
             e.printStackTrace();
             return -1;
@@ -73,7 +72,8 @@ public class PermissionManagerSu {
     public int addRevoke(String packageName, String manifestPermission){
         if (os==null) return -1;
         try {
-            os.writeBytes(String.format("pm revoke %s %s",packageName,manifestPermission));
+            Log.i("PermissionManagerSu",String.format("pm revoke %s %s\n",packageName,manifestPermission));
+            os.writeBytes(String.format("pm revoke %s %s\n",packageName,manifestPermission));
         }catch (IOException e){
             e.printStackTrace();
             return -1;

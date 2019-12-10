@@ -66,6 +66,9 @@ public class PermissionOperator {
                             managerSu.addGrant(op.packageName, Manifest.permission.ACCESS_COARSE_LOCATION);
                         if (userPerms.contains(Manifest.permission.ACCESS_FINE_LOCATION))
                             managerSu.addGrant(op.packageName, Manifest.permission.ACCESS_FINE_LOCATION);
+                        for (String permission:userPerms){
+                            managerSu.addGrant(op.packageName,permission);
+                        }
                         break;
                     case PermisensePermissions.SENSOR:
                         XposedPermissionSettings.grantPermission(op.packageName, String.valueOf(PermisensePermissions.SENSOR));
@@ -102,6 +105,9 @@ public class PermissionOperator {
                             managerSu.addRevoke(op.packageName, Manifest.permission.ACCESS_COARSE_LOCATION);
                         if (userPerms.contains(Manifest.permission.ACCESS_FINE_LOCATION))
                             managerSu.addRevoke(op.packageName, Manifest.permission.ACCESS_FINE_LOCATION);
+                        for (String permission:userPerms){
+                            managerSu.addRevoke(op.packageName,permission);
+                        }
                         break;
                     case PermisensePermissions.SENSOR:
                         XposedPermissionSettings.revokePermission(op.packageName, String.valueOf(PermisensePermissions.SENSOR));
