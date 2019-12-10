@@ -72,13 +72,13 @@ public class PermissionManager {
         if (monitor.isActivated()){
             for (Rule r:rules){
                 if (r.scenarioName.equals(monitor.getName())){
-                    new ApplyPermissionTask(r.groupName,r.permissions, PermissionOperation.REVOKE);
+                    new ApplyPermissionTask(r.groupName,r.permissions, PermissionOperation.REVOKE).execute();
                 }
             }
         }else{
             for (Rule r:rules){
                 if (r.scenarioName.equals(monitor.getName())){
-                    new ApplyPermissionTask(r.groupName,r.permissions, PermissionOperation.GRANT);
+                    new ApplyPermissionTask(r.groupName,r.permissions, PermissionOperation.GRANT).execute();
                 }
             }
         }
